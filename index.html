@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>भावेश्वरी दूध संस्था ,गोरंबे</title>
+</head>
+<body style="font-family:'Noto Sans Devanagari',sans-serif;max-width:800px;margin:auto;">
+  <h2 style="text-align:center;">🐄 भावेश्वरी दूध संस्था ,गोरंबे </h2>
+
+  <!-- Form -->
+  <form id="milkForm" onsubmit="event.preventDefault(); submitMilkData();">
+    <label>तारीख:</label><br>
+    <input type="date" id="date" required><br>
+    <label>शेतकऱ्याचं नाव:</label><br>
+    <input type="text" id="name" placeholder="नाव" required><br>
+    <label>लिटर:</label><br>
+    <input type="number" id="liters" step="0.1" required><br>
+    <label>फॅट (%):</label><br>
+    <input type="number" id="fat" step="0.1" required><br>
+    <label>रेट (₹ प्रति लिटर):</label><br>
+    <input type="number" id="rate" step="0.1" required><br><br>
+    <button type="submit">डेटा सेव्ह करा</button>
+  </form>
+
+  <h3>संकलन रेकॉर्ड:</h3>
+  <button onclick="downloadPDF()">📄 PDF डाउनलोड करा</button>
+  <table border="1" width="100%" id="milkTable">
+    <thead>
+      <tr>
+        <th>तारीख</th>
+        <th>नाव</th>
+        <th>लिटर</th>
+        <th>फॅट</th>
+        <th>रेट</th>
+        <th>रक्कम</th>
+      </tr>
+    </thead>
+    <tbody id="dataBody"></tbody>
+  </table>
+
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Firebase SDKs v9 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_4wQmuzFPJjid-Co9Y-6vgEb70jxWTSY",
+      authDomain: "dairy-mill-production.firebaseapp.com",
+      databaseURL: "https://dairy-mill-production-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "dairy-mill-production",
+      storageBucket: "dairy-mill-production.firebasestorage.app",
+      messagingSenderId: "721651192386",
+      appId: "1:721651192386:web:b5613cedce06deed1e13db",
+      measurementId: "G-YQ2BDHS8HG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.submitMilkData = function () {
+      const date = document.getElementById('date').value;
+      const name = document.getElementById('name').value;
+      const liters = document.getElementById('liters').value;
+      const fat = document.getElementById('fat').value;
+      const rate = document.getElementById('rate').value;
+      const amount = (parseFloat(liters) * parseFloat(rate)).toFixed(2);
+
+      push(ref(db, 'milkCollection'), {
+        date: date,
+        name: name,
+        liters: liters,
+        fat: fat,
+        rate: rate,
+        amount: amount
+      }).then(() => {
+        alert('डेटा सेव्ह झाला ✅');
+        document.getElementById('milkForm').reset();
+      });
+    }
+
+    const dataRef = ref(db, 'milkCollection');
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+      const tableBody = document.getElementById('dataBody');
+      tableBody.innerHTML = '';
+      for (let key in data) {
+        const row = data[key];
+        tableBody.innerHTML += `
+          <tr>
+            <td>${row.date}</td>
+            <td>${row.name}</td>
+            <td>${row.liters}</td>
+            <td>${row.fat}</td>
+            <td>${row.rate}</td>
+            <td>${row.amount}</td>
+          </tr>`;
+      }
+    });
+
+    // PDF Download Function
+    window.downloadPDF = function () {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("भावेश्वरी दूध संस्था, गोरंबे - संकलन रेकॉर्ड", 10, 10);
+
+      // टेबलचा HTML घ्या
+      const table = document.getElementById('milkTable');
+      let y = 20;
+      for (let row of table.rows) {
+        let line = '';
+        for (let cell of row.cells) {
+          line += cell.innerText + '   ';
+        }
+        doc.text(line, 10, y);
+        y += 8;
+      }
+
+      doc.save('milk-records.pdf');
+    }
+  </script>
+</body>
+</html>
