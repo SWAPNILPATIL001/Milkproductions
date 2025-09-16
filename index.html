@@ -1,163 +1,80 @@
-<!DOCTYPE html>
-<html lang="mr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>दूध संस्था पोर्टल</title>
-  <style>
-    body{font-family:'Noto Sans Devanagari',sans-serif;max-width:900px;margin:auto;}
-    nav a{margin:5px;padding:5px 10px;display:inline-block;background:#eee;text-decoration:none;}
-    section{display:none;}
-    section.active{display:block;}
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th,td{border:1px solid #ccc;padding:5px;text-align:center;}
-  </style>
-</head>
-<body>
-  <h2 style="text-align:center;">🐄 भावेश्वरी दूध संस्था पोर्टल</h2>
-  <nav>
-    <a href="#" onclick="showPage('home')">🏠 होम</a>
-    <a href="#" onclick="showPage('collection')">📝 दूध संकलन</a>
-    <a href="#" onclick="showPage('suppliers')">👤 पुरवठादार</a>
-    <a href="#" onclick="showPage('billing')">💰 पेमेंट/बिलिंग</a>
-    <a href="#" onclick="showPage('reports')">📄 रिपोर्ट्स</a>
-  </nav>
+<!-- दूध संकलन -->
+<section id="collection">
+  <h3>दूध संकलन रेकॉर्ड</h3>
+  <form onsubmit="event.preventDefault();saveCollection();">
+    तारीख:<input type="date" id="c_date" required>
+    लिटर:<input type="number" id="c_liter" required>
+    फॅट:<input type="number" id="c_fat" step="0.1" required>
+    रक्कम:<input type="number" id="c_amount" required>
+    प्रकार:
+    <select id="c_type" required>
+      <option value="गाय">गाय (Cow)</option>
+      <option value="म्हैस">म्हैस (Buffalo)</option>
+    </select>
+    <button type="submit">सेव्ह</button>
+  </form>
+  <table id="collectionTable">
+    <thead>
+      <tr>
+        <th>तारीख</th>
+        <th>प्रकार</th>
+        <th>लिटर</th>
+        <th>फॅट</th>
+        <th>रक्कम</th>
+      </tr>
+    </thead>
+    <tbody id="collectionBody"></tbody>
+  </table>
+</section>
 
-  <!-- होम -->
-  <section id="home" class="active">
-    <h3>भावेश्वरी दूध संस्था ,गोरंबे</h3>
-    <p>संपर्क: ९८७६५४३२१०</p>
-    <p>संस्थेची माहिती इथे टाका…</p>
-  </section>
+<!-- रिपोर्ट्स -->
+<section id="reports">
+  <h3>रिपोर्ट्स डाउनलोड</h3>
+  <button onclick="downloadCollectionPDF()">दूध संकलन PDF</button>
+  <button onclick="downloadSuppliersPDF()">पुरवठादार PDF</button>
+</section>
 
-  <!-- दूध संकलन -->
-  <section id="collection">
-    <h3>दूध संकलन रेकॉर्ड</h3>
-    <form onsubmit="event.preventDefault();saveCollection();">
-      तारीख:<input type="date" id="c_date" required>
-      लिटर:<input type="number" id="c_liter" required>
-      फॅट:<input type="number" id="c_fat" step="0.1" required>
-      रक्कम:<input type="number" id="c_amount" required>
-      <button type="submit">सेव्ह</button>
-    </form>
-    <table>
-      <thead><tr><th>तारीख</th><th>लिटर</th><th>फॅट</th><th>रक्कम</th></tr></thead>
-      <tbody id="collectionBody"></tbody>
-    </table>
-  </section>
+<script>
+  // दूध संकलन सेव्ह
+  window.saveCollection=function(){
+    push(ref(db,'milkCollection'),{
+      date:document.getElementById('c_date').value,
+      type:document.getElementById('c_type').value,
+      liter:document.getElementById('c_liter').value,
+      fat:document.getElementById('c_fat').value,
+      amount:document.getElementById('c_amount').value
+    }).then(()=>alert('सेव्ह झालं'));
+  }
 
-  <!-- पुरवठादार -->
-  <section id="suppliers">
-    <h3>पुरवठादार रजिस्ट्रेशन</h3>
-    <form onsubmit="event.preventDefault();saveSupplier();">
-      नाव:<input type="text" id="s_name" required>
-      मोबाईल:<input type="text" id="s_mobile" required>
-      गाव:<input type="text" id="s_village" required>
-      <button type="submit">सेव्ह</button>
-    </form>
-    <table>
-      <thead><tr><th>नाव</th><th>मोबाईल</th><th>गाव</th></tr></thead>
-      <tbody id="supplierBody"></tbody>
-    </table>
-  </section>
-
-  <!-- बिलिंग -->
-  <section id="billing">
-    <h3>पेमेंट/बिलिंग</h3>
-    <p>इथे प्रत्येक शेतकऱ्याची देणी / उधारी दाखवा. (डेटा Firebase मधून आणून गणना करू शकतो)</p>
-  </section>
-
-  <!-- रिपोर्ट्स -->
-  <section id="reports">
-    <h3>रिपोर्ट्स डाउनलोड</h3>
-    <button onclick="downloadPDF('collectionTable','milk-collection.pdf')">दूध संकलन PDF</button>
-    <button onclick="downloadSuppliers()">पुरवठादार PDF</button>
-  </section>
-
-  <!-- jsPDF + autoTable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-  <!-- Firebase v9 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD_4wQmuzFPJjid-Co9Y-6vgEb70jxWTSY",
-      authDomain: "dairy-mill-production.firebaseapp.com",
-      databaseURL: "https://dairy-mill-production-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "dairy-mill-production",
-      storageBucket: "dairy-mill-production.firebasestorage.app",
-      messagingSenderId: "721651192386",
-      appId: "1:721651192386:web:b5613cedce06deed1e13db"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // पेज स्विच
-    window.showPage=function(id){
-      document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+  // वाचणे
+  onValue(ref(db,'milkCollection'),snap=>{
+    const tb=document.getElementById('collectionBody');
+    tb.innerHTML='';
+    const data=snap.val();
+    for(let k in data){
+      let r=data[k];
+      tb.innerHTML+=`<tr>
+        <td>${r.date}</td>
+        <td>${r.type}</td>
+        <td>${r.liter}</td>
+        <td>${r.fat}</td>
+        <td>${r.amount}</td>
+      </tr>`;
     }
+  });
 
-    // दूध संकलन सेव्ह
-    window.saveCollection=function(){
-      push(ref(db,'milkCollection'),{
-        date:document.getElementById('c_date').value,
-        liter:document.getElementById('c_liter').value,
-        fat:document.getElementById('c_fat').value,
-        amount:document.getElementById('c_amount').value
-      }).then(()=>alert('सेव्ह झालं'));
-    }
-
-    // पुरवठादार सेव्ह
-    window.saveSupplier=function(){
-      push(ref(db,'suppliers'),{
-        name:document.getElementById('s_name').value,
-        mobile:document.getElementById('s_mobile').value,
-        village:document.getElementById('s_village').value
-      }).then(()=>alert('सेव्ह झालं'));
-    }
-
-    // डेटा वाचणे
-    onValue(ref(db,'milkCollection'),snap=>{
-      const tb=document.getElementById('collectionBody');
-      tb.innerHTML='';
-      const data=snap.val();
-      for(let k in data){
-        let r=data[k];
-        tb.innerHTML+=`<tr><td>${r.date}</td><td>${r.liter}</td><td>${r.fat}</td><td>${r.amount}</td></tr>`;
-      }
+  // PDF (फक्त टेबलच्या हेडिंग्स जशा HTML मध्ये आहेत तशाच)
+  window.downloadCollectionPDF=function(){
+    const { jsPDF }=window.jspdf;
+    const doc=new jsPDF();
+    doc.setFontSize(14);
+    doc.text('दूध संकलन रेकॉर्ड', doc.internal.pageSize.getWidth()/2, 15, {align:'center'});
+    doc.autoTable({
+      html:'#collectionTable',
+      startY:25,
+      headStyles:{fillColor:[41,128,185]},
+      styles:{font:'helvetica',fontSize:10,cellPadding:2}
     });
-
-    onValue(ref(db,'suppliers'),snap=>{
-      const tb=document.getElementById('supplierBody');
-      tb.innerHTML='';
-      const data=snap.val();
-      for(let k in data){
-        let r=data[k];
-        tb.innerHTML+=`<tr><td>${r.name}</td><td>${r.mobile}</td><td>${r.village}</td></tr>`;
-      }
-    });
-
-    // PDF Download (milkCollection)
-    window.downloadPDF=function(selector,name){
-      const { jsPDF }=window.jspdf;
-      const doc=new jsPDF();
-      doc.text('दूध संकलन रिपोर्ट',14,15);
-      doc.autoTable({html:'#collection table',startY:25});
-      doc.save(name);
-    }
-
-    // Suppliers PDF
-    window.downloadSuppliers=function(){
-      const { jsPDF }=window.jspdf;
-      const doc=new jsPDF();
-      doc.text('पुरवठादार रिपोर्ट',14,15);
-      doc.autoTable({html:'#suppliers table',startY:25});
-      doc.save('suppliers.pdf');
-    }
-  </script>
-</body>
-</html>
+    doc.save('दूध-संकलन.pdf');
+  }
+</script>
