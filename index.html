@@ -39,8 +39,9 @@
     <tbody id="dataBody"></tbody>
   </table>
 
-  <!-- jsPDF CDN -->
+  <!-- jsPDF & autoTable CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
   <!-- Firebase SDKs v9 -->
   <script type="module">
@@ -101,23 +102,21 @@
       }
     });
 
-    // PDF Download Function
+    // PDF Download Function with autoTable
     window.downloadPDF = function () {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      doc.text("भावेश्वरी दूध संस्था, गोरंबे - संकलन रेकॉर्ड", 10, 10);
 
-      // टेबलचा HTML घ्या
-      const table = document.getElementById('milkTable');
-      let y = 20;
-      for (let row of table.rows) {
-        let line = '';
-        for (let cell of row.cells) {
-          line += cell.innerText + '   ';
-        }
-        doc.text(line, 10, y);
-        y += 8;
-      }
+      doc.setFontSize(14);
+      doc.text("भावेश्वरी दूध संस्था, गोरंबे - संकलन रेकॉर्ड", 14, 15);
+
+      // Convert HTML table to PDF table
+      doc.autoTable({
+        html: '#milkTable',
+        startY: 25,
+        styles: { font: 'helvetica', fontSize: 10, cellPadding: 2 },
+        headStyles: { fillColor: [41, 128, 185] },
+      });
 
       doc.save('milk-records.pdf');
     }
