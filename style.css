@@ -1,119 +1,115 @@
-/* Classic Windows-style background */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #e5e5e5;  /* light grey */
-  color: #000;
-  margin: 0;
-  padding: 0;
+:root{
+  --primary:#0d6efd;
+  --muted:#f4f6fb;
+  --card:#ffffff;
+  --can-border:#bfbfbf;
+  --milk-fill:#f1c40f;
 }
+body{
+  font-family:'Poppins',sans-serif;
+  max-width:1000px;
+  margin:12px auto;
+  padding:14px;
+  color:#222;
+}
+h2{text-align:center;margin:0 0 12px 0;}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;}
+nav a{
+  padding:8px 12px;background:var(--muted);border-radius:6px;color:#111;text-decoration:none;font-weight:500;
+}
+nav a:hover{background:var(--primary);color:#fff}
 
-/* Top bar / header like old software */
-header, .nav-bar {
-  background-color: #004a8f; /* deep blue */
-  color: white;
-  padding: 6px 10px;
-  font-weight: bold;
-  font-size: 14px;
-  display: flex;
-  gap: 15px;
-}
+section{display:none;}
+section.active{display:block;margin-top:8px;}
 
-/* Tabs style */
-.nav-bar button {
-  background: #f0f0f0;
-  color: black;
-  border: 1px solid #999;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-.nav-bar button:hover {
-  background: #dcdcdc;
-}
+.card{background:var(--card);padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
 
-/* Main form container */
-.form-container {
-  width: 95%;
-  margin: 10px auto;
-  background-color: #f7f7f7;
-  border: 2px solid #999;
-  padding: 10px;
-}
+form{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+form .full{grid-column:1/-1}
+label{font-size:0.9rem;margin-bottom:4px;display:block}
+input,select,button{padding:8px;border:1px solid #ddd;border-radius:6px;font-size:0.95rem}
+button{background:var(--primary);color:#fff;border:none}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #e1e1e1;padding:6px;text-align:center;font-size:0.9rem}
+th{background:#f7f7f7}
 
-/* Each label + input row */
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 5px;
+/* Today summary + cans */
+.today-box{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:10px 0;padding:12px;border-radius:8px;background:#fbfbfd}
+.today-text{flex:1}
+.cans-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.can{
+  width:56px;height:100px;border:3px solid var(--can-border);border-radius:6px 6px 8px 8px;position:relative;
+  background:linear-gradient(180deg,#fff,#f9f9f9);overflow:hidden;display:flex;align-items:flex-end;
 }
+.can .milk-fill{
+  width:100%;background:linear-gradient(180deg,var(--milk-fill),#f39c12);height:0%;
+  transition:height 500ms ease;
+  display:flex;align-items:flex-end;justify-content:center;color:#000;font-size:12px;font-weight:600;padding-bottom:4px;
+}
+.can .cap{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:36px;height:10px;background:#ddd;border-radius:4px;
+  box-shadow:0 1px 0 rgba(0,0,0,0.05);
+}
+.can-label{text-align:center;font-size:12px;margin-top:6px}
 
-/* Labels */
-.form-row label {
-  width: 90px;
-  font-size: 13px;
-  text-align: right;
+@media(max-width:720px){
+  form{grid-template-columns:repeat(1,1fr)}
+  .can{width:48px;height:88px}
+}:root{
+  --primary:#0d6efd;
+  --muted:#f4f6fb;
+  --card:#ffffff;
+  --can-border:#bfbfbf;
+  --milk-fill:#f1c40f;
 }
+body{
+  font-family:'Poppins',sans-serif;
+  max-width:1000px;
+  margin:12px auto;
+  padding:14px;
+  color:#222;
+}
+h2{text-align:center;margin:0 0 12px 0;}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;}
+nav a{
+  padding:8px 12px;background:var(--muted);border-radius:6px;color:#111;text-decoration:none;font-weight:500;
+}
+nav a:hover{background:var(--primary);color:#fff}
 
-/* Inputs / selects */
-.form-row input,
-.form-row select {
-  flex: 1;
-  padding: 3px;
-  border: 1px solid #666;
-  background-color: #fff;
-  font-size: 13px;
-}
+section{display:none;}
+section.active{display:block;margin-top:8px;}
 
-/* Section titles like blue highlight */
-.section-title {
-  background-color: #d0ebff;
-  padding: 4px;
-  font-weight: bold;
-  font-size: 13px;
-  border: 1px solid #999;
-  margin-top: 10px;
-}
+.card{background:var(--card);padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
 
-/* Milk cans box */
-.milk-cans {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 15px;
-  margin-top: 10px;
-}
-.milk-can {
-  width: 60px;
-  height: 100px;
-  background-color: #cccccc;
-  border: 2px solid #666;
-  border-radius: 5px;
-  position: relative;
-}
-.milk-can:before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  width: 40px;
-  height: 10px;
-  background: #666;
-  border-radius: 2px;
-}
+form{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+form .full{grid-column:1/-1}
+label{font-size:0.9rem;margin-bottom:4px;display:block}
+input,select,button{padding:8px;border:1px solid #ddd;border-radius:6px;font-size:0.95rem}
+button{background:var(--primary);color:#fff;border:none}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #e1e1e1;padding:6px;text-align:center;font-size:0.9rem}
+th{background:#f7f7f7}
 
-/* Table like below area */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
-  font-size: 13px;
+/* Today summary + cans */
+.today-box{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:10px 0;padding:12px;border-radius:8px;background:#fbfbfd}
+.today-text{flex:1}
+.cans-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.can{
+  width:56px;height:100px;border:3px solid var(--can-border);border-radius:6px 6px 8px 8px;position:relative;
+  background:linear-gradient(180deg,#fff,#f9f9f9);overflow:hidden;display:flex;align-items:flex-end;
 }
-table th, table td {
-  border: 1px solid #999;
-  padding: 3px 4px;
-  text-align: center;
+.can .milk-fill{
+  width:100%;background:linear-gradient(180deg,var(--milk-fill),#f39c12);height:0%;
+  transition:height 500ms ease;
+  display:flex;align-items:flex-end;justify-content:center;color:#000;font-size:12px;font-weight:600;padding-bottom:4px;
 }
-table th {
-  background-color: #d0ebff;
-  font-weight: bold;
+.can .cap{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:36px;height:10px;background:#ddd;border-radius:4px;
+  box-shadow:0 1px 0 rgba(0,0,0,0.05);
+}
+.can-label{text-align:center;font-size:12px;margin-top:6px}
+
+@media(max-width:720px){
+  form{grid-template-columns:repeat(1,1fr)}
+  .can{width:48px;height:88px}
 }
