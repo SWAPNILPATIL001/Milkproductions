@@ -2,37 +2,84 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>दूध संकलन</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Milk Collection Portal</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dashboard">
+<body>
+
   <header>
-    <h1>दूध संकलन - </h1>
-    <span id="ownerMilk">आजचे एकूण कॅन: 0</span>
+    Milk Collection JAYHIND TARLE
   </header>
 
-  <section class="form-section">
-    <label>कोड</label><input id="code">
-    <label>फॅट</label><input id="fat">
-    <label>SNF</label><input id="snf">
-    <label>प्रमाण (ली)</label><input id="qty">
-    <button id="addBtn">जोडा</button>
-  </section>
+  <div class="nav-bar">
+    <button>होम</button>
+    <button>दूध संकलन</button>
+    <button>पुरवठादार</button>
+    <button>पेमेंट / बिलिंग</button>
+    <button>रिपोर्ट्स</button>
+  </div>
 
-  <section class="table-section">
+  <div class="form-container">
+    <div class="section-title">दूध संकलन</div>
+
+    <div class="form-row">
+      <label>कोड:</label>
+      <input type="text" id="code">
+    </div>
+
+    <div class="form-row">
+      <label>नाव:</label>
+      <input type="text" id="name">
+    </div>
+
+    <div class="form-row">
+      <label>लिटर:</label>
+      <input type="number" id="liters">
+    </div>
+
+    <div class="form-row">
+      <label>फॅट %:</label>
+      <input type="number" id="fat">
+    </div>
+
+    <div class="form-row">
+      <label>SNF %:</label>
+      <input type="number" id="snf">
+    </div>
+
+    <div class="form-row">
+      <label>दर ₹:</label>
+      <input type="number" id="rate">
+    </div>
+
+    <button onclick="saveData()">डेटा सेव्ह करा</button>
+
+    <div class="milk-cans">
+      <div class="milk-can"></div>
+      <div class="milk-can"></div>
+    </div>
+
     <table>
       <thead>
         <tr>
-          <th>कोड</th><th>फॅट</th><th>SNF</th><th>ली.</th><th>रेट</th><th>एकूण</th>
+          <th>तारीख</th>
+          <th>नाव</th>
+          <th>लिटर</th>
+          <th>फॅट</th>
+          <th>SNF</th>
+          <th>दर</th>
+          <th>रक्कम</th>
         </tr>
       </thead>
-      <tbody id="milkTable"></tbody>
+      <tbody id="dataBody"></tbody>
     </table>
-  </section>
+  </div>
 
-  <script type="module" src="rates.js"></script>
-  <script type="module" src="app.js"></script>
+  <script>
+    function saveData(){
+      alert('डेटा सेव्ह झाला ✅');
+    }
+  </script>
 </body>
 </html>
