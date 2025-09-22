@@ -1,169 +1,446 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>भावेश्वरी दूध संस्था ,गोरंबे</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<style>
-body{font-family:'Noto Sans Devanagari',sans-serif;max-width:900px;margin:auto;padding:10px;}
-nav a{margin:5px;display:inline-block;text-decoration:none;color:#007bff;}
-section{display:none;margin-top:15px;}
-section.active{display:block;}
-form{background:#f4f4f4;padding:10px;border-radius:5px;margin-top:10px;}
-label{display:block;margin-top:5px;}
-input,select,button{width:100%;padding:6px;margin-top:2px;box-sizing:border-box;}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.9rem;}
-th,td{border:1px solid #ccc;padding:5px;text-align:center;}
-th{background:#eee;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>भावेश्वरी दूध संस्था, गोरंबे</title>
+
+  <!-- Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- jsPDF / autoTable / SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    :root{
+      --primary:#0d6efd;
+      --muted:#f4f6fb;
+      --card:#ffffff;
+      --can-border:#bfbfbf;
+      --milk-color:#f6f0dd; /* milk-like pale */
+      --milk-fill:#f1c40f; /* yellowish to show fill (you can change to whiteish) */
+    }
+    body{
+      font-family:'Poppins',sans-serif;
+      max-width:1000px;
+      margin:12px auto;
+      padding:14px;
+      color:#222;
+    }
+    h2{text-align:center;margin:0 0 12px 0;}
+    nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;}
+    nav a{
+      padding:8px 12px;background:var(--muted);border-radius:6px;color:#111;text-decoration:none;font-weight:500;
+    }
+    nav a:hover{background:var(--primary);color:#fff}
+
+    section{display:none;}
+    section.active{display:block;margin-top:8px;}
+
+    .card{background:var(--card);padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+
+    form{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+    form .full{grid-column:1/-1}
+    label{font-size:0.9rem;margin-bottom:4px;display:block}
+    input,select,button{padding:8px;border:1px solid #ddd;border-radius:6px;font-size:0.95rem}
+    button{background:var(--primary);color:#fff;border:none}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #e1e1e1;padding:6px;text-align:center;font-size:0.9rem}
+    th{background:#f7f7f7}
+
+    /* Today summary + cans */
+    .today-box{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:10px 0;padding:12px;border-radius:8px;background:#fbfbfd}
+    .today-text{flex:1}
+    .cans-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+    .can{
+      width:56px;height:100px;border:3px solid var(--can-border);border-radius:6px 6px 8px 8px;position:relative;
+      background:linear-gradient(180deg,#fff,#f9f9f9);overflow:hidden;display:flex;align-items:flex-end;
+    }
+    .can .milk-fill{
+      width:100%;background:linear-gradient(180deg,var(--milk-fill),#f39c12);height:0%;
+      transition:height 500ms ease;
+      display:flex;align-items:flex-end;justify-content:center;color:#000;font-size:12px;font-weight:600;padding-bottom:4px;
+    }
+    .can .cap{
+      position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:36px;height:10px;background:#ddd;border-radius:4px;
+      box-shadow:0 1px 0 rgba(0,0,0,0.05);
+    }
+    .can-label{text-align:center;font-size:12px;margin-top:6px}
+
+    /* responsive */
+    @media(max-width:720px){
+      form{grid-template-columns:repeat(1,1fr)}
+      .can{width:48px;height:88px}
+    }
+  </style>
 </head>
 <body>
-<h2 style="text-align:center;">🐄 भावेश्वरी दूध संस्था ,गोरंबे</h2>
-<nav>
-  <a href="#" onclick="show('home')">🏠 होम</a>
-  <a href="#" onclick="show('collection')">🥛 संकलन</a>
-  <a href="#" onclick="show('suppliers')">📋 पुरवठादार</a>
-  <a href="#" onclick="show('billing')">💰 बिलिंग</a>
-  <a href="#" onclick="show('reports')">📑 रिपोर्ट्स</a>
-</nav>
+  <h2>🐄 भावेश्वरी दूध संस्था, गोरंबे</h2>
 
-<!-- होम -->
-<section id="home" class="active">
-  <h3>डेअरी माहिती</h3>
-  <p>संपर्क: 9876543210 / गाव गोरंबे</p>
-</section>
+  <nav>
+    <a href="#" onclick="show('home')">🏠 होम</a>
+    <a href="#" onclick="show('collection')">🥛 संकलन</a>
+    <a href="#" onclick="show('suppliers')">📋 पुरवठादार</a>
+    <a href="#" onclick="show('reports')">📑 रिपोर्ट्स</a>
+  </nav>
 
-<!-- दूध संकलन -->
-<section id="collection">
-  <h3>दूध संकलन रेकॉर्ड</h3>
-  <form onsubmit="event.preventDefault();saveCollection();">
-    <label>मेंबर नंबर:</label><input id="memberNo" oninput="autoFillName()" required>
-    <label>नाव:</label><input id="memberName" readonly>
-    <label>तारीख:</label><input type="date" id="c_date" required>
-    <label>प्रकार:</label>
-    <select id="c_type" required>
-      <option value="">निवडा</option>
-      <option value="गाय">गाय</option>
-      <option value="म्हैस">म्हैस</option>
-    </select>
-    <label>लिटर:</label><input type="number" id="c_liter" step="0.1" required>
-    <label>फॅट:</label><input type="number" id="c_fat" step="0.1" required>
-    <label>रेट:</label><input type="number" id="c_rate" step="0.1" required>
-    <button>सेव्ह</button>
-  </form>
-  <table id="collectionTable"><thead>
-    <tr><th>मेंबर</th><th>नाव</th><th>तारीख</th><th>प्रकार</th><th>लिटर</th><th>फॅट</th><th>रेट</th><th>रक्कम</th></tr>
-  </thead><tbody id="collectionBody"></tbody></table>
-</section>
+  <!-- HOME -->
+  <section id="home" class="active">
+    <div class="card">
+      <h3 style="margin-top:0">संस्था माहिती</h3>
+      <p>भावेश्वरी दूध संस्था, गोरंबे</p>
+      <p>संपर्क: <strong>9876543210</strong></p>
+      <p>आम्ही ताजं दूध रोज संकलित करतो व स्थानिक मार्केटमध्ये वितरित करतो.</p>
+    </div>
+  </section>
 
-<!-- पुरवठादार -->
-<section id="suppliers">
-  <h3>पुरवठादार नोंदणी</h3>
-  <form onsubmit="event.preventDefault();saveSupplier();">
-    <label>नाव:</label><input id="s_name" required>
-    <label>मोबाईल:</label><input id="s_mobile" required>
-    <label>गाव:</label><input id="s_village" required>
-    <button>सेव्ह</button>
-  </form>
-  <table><thead><tr><th>नाव</th><th>मोबाईल</th><th>गाव</th></tr></thead><tbody id="suppliersBody"></tbody></table>
-</section>
+  <!-- COLLECTION -->
+  <section id="collection">
+    <div class="card">
+      <h3 style="margin-top:0">दूध संकलन नोंद</h3>
 
-<!-- बिलिंग -->
-<section id="billing">
-  <h3>पेमेंट / बिलिंग</h3>
-  <p>इथे Firebase मध्ये बिलिंग डेटा ठेवून प्रत्येक शेतकऱ्याची देणी दाखवू शकतोस.</p>
-</section>
+      <!-- today summary + cans -->
+      <div class="today-box">
+        <div class="today-text">
+          <div style="font-size:0.95rem;color:#555">आज एकूण जमा झाले</div>
+          <div style="font-size:1.6rem;font-weight:600"><span id="todayTotal">0</span> लिटर</div>
+          <div style="font-size:0.85rem;color:#666">(प्रति कॅन = <span id="perCanLabel">50</span> लिटर)</div>
+        </div>
 
-<!-- रिपोर्ट्स -->
-<section id="reports">
-  <h3>रिपोर्ट्स डाउनलोड</h3>
-  <button onclick="downloadPDF()">PDF डाउनलोड</button>
-  <button onclick="downloadExcel()">Excel डाउनलोड</button>
-</section>
+        <div>
+          <div class="cans-row" id="cansRow">
+            <!-- dynamic cans will be injected here -->
+          </div>
+        </div>
+      </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+      <!-- form -->
+      <form onsubmit="event.preventDefault();saveCollection();" class="card" style="margin-top:10px;">
+        <div>
+          <label>मेंबर नंबर</label>
+          <input id="memberNo" type="number" oninput="autoFillName()" placeholder="उदा. 101" required>
+        </div>
+        <div>
+          <label>नाव</label>
+          <input id="memberName" readonly placeholder="ऑटो-फिल">
+        </div>
 
-const firebaseConfig={/*तुझं config*/};
-const app=initializeApp(firebaseConfig);
-const db=getDatabase(app);
+        <div>
+          <label>तारीख</label>
+          <input id="c_date" type="date" required>
+        </div>
+        <div>
+          <label>प्रकार</label>
+          <select id="c_type" required>
+            <option value="">निवडा</option>
+            <option value="गाय">गाय</option>
+            <option value="म्हैस">म्हैस</option>
+          </select>
+        </div>
 
-// sample members
-const memberList={101:"संतोष",102:"राजेश",103:"सुनिता",104:"अजय"};
+        <div>
+          <label>लिटर</label>
+          <input id="c_liter" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label>फॅट (%)</label>
+          <input id="c_fat" type="number" step="0.1" required>
+        </div>
 
-window.show=function(id){
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-};
+        <div>
+          <label>रेट (₹/लिटर)</label>
+          <input id="c_rate" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label>रक्कम (ऑटो)</label>
+          <input id="c_amount" type="number" step="0.01" readonly placeholder="ऑटो गणना">
+        </div>
 
-window.autoFillName=function(){
-  const no=document.getElementById('memberNo').value;
-  document.getElementById('memberName').value=memberList[no]||"";
-};
+        <div class="full" style="display:flex;gap:8px">
+          <button type="button" style="flex:1" onclick="calcAmount()">रक्कम गणना</button>
+          <button type="submit" style="flex:1">सेव्ह करा</button>
+        </div>
+      </form>
 
-window.saveCollection=function(){
-  const no=document.getElementById('memberNo').value;
-  const name=document.getElementById('memberName').value;
-  const date=document.getElementById('c_date').value;
-  const type=document.getElementById('c_type').value;
-  const liters=document.getElementById('c_liter').value;
-  const fat=document.getElementById('c_fat').value;
-  const rate=document.getElementById('c_rate').value;
-  const amount=(parseFloat(liters)*parseFloat(rate)).toFixed(2);
-  push(ref(db,'milkCollection'),{memberNo:no,name,date,type,liters,fat,rate,amount});
-};
+      <!-- collection table -->
+      <div style="margin-top:12px;overflow:auto">
+        <table id="collectionTable">
+          <thead>
+            <tr><th>मेंबर</th><th>नाव</th><th>तारीख</th><th>प्रकार</th><th>लिटर</th><th>फॅट</th><th>रेट</th><th>रक्कम</th></tr>
+          </thead>
+          <tbody id="collectionBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-onValue(ref(db,'milkCollection'),snap=>{
-  const tb=document.getElementById('collectionBody');
-  tb.innerHTML='';
-  const data=snap.val()||{};
-  for(let k in data){
-    let r=data[k];
-    tb.innerHTML+=`<tr>
-    <td>${r.memberNo}</td><td>${r.name}</td><td>${r.date}</td><td>${r.type}</td>
-    <td>${r.liters}</td><td>${r.fat}</td><td>${r.rate}</td><td>${r.amount}</td>
-    </tr>`;
-  }
-});
+  <!-- SUPPLIERS -->
+  <section id="suppliers">
+    <div class="card">
+      <h3 style="margin-top:0">पुरवठादार नोंदणी</h3>
+      <form onsubmit="event.preventDefault();saveSupplier();">
+        <div>
+          <label>नाव</label><input id="s_name" required>
+        </div>
+        <div>
+          <label>मोबाईल</label><input id="s_mobile" required>
+        </div>
+        <div>
+          <label>गाव</label><input id="s_village" required>
+        </div>
+        <div style="margin-top:8px"><button type="submit">सेव्ह</button></div>
+      </form>
 
-window.saveSupplier=function(){
-  const name=document.getElementById('s_name').value;
-  const mobile=document.getElementById('s_mobile').value;
-  const village=document.getElementById('s_village').value;
-  push(ref(db,'suppliers'),{name,mobile,village});
-  document.getElementById('s_name').value='';
-  document.getElementById('s_mobile').value='';
-  document.getElementById('s_village').value='';
-};
+      <div style="margin-top:12px;overflow:auto">
+        <table>
+          <thead><tr><th>नाव</th><th>मोबाईल</th><th>गाव</th></tr></thead>
+          <tbody id="suppliersBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-onValue(ref(db,'suppliers'),snap=>{
-  const tb=document.getElementById('suppliersBody');
-  tb.innerHTML='';
-  const data=snap.val()||{};
-  for(let k in data){
-    let r=data[k];
-    tb.innerHTML+=`<tr><td>${r.name}</td><td>${r.mobile}</td><td>${r.village}</td></tr>`;
-  }
-});
+  <!-- REPORTS -->
+  <section id="reports">
+    <div class="card">
+      <h3 style="margin-top:0">रिपोर्ट्स डाउनलोड</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="downloadPDF()">दूध संकलन PDF</button>
+        <button onclick="downloadExcel()">दूध संकलन Excel</button>
+      </div>
+    </div>
+  </section>
 
-// PDF/Excel
-window.downloadPDF=function(){
-  const { jsPDF }=window.jspdf;
-  const doc=new jsPDF();
-  doc.setFontSize(14);
-  doc.text('दूध संकलन रेकॉर्ड',14,15);
-  doc.autoTable({html:'#collectionTable',startY:25});
-  doc.save('दूध-संकलन.pdf');
-};
+  <!-- non-module script: UI nav -->
+  <script>
+    function show(id){
+      document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    // set today's date default
+    (function(){
+      const d=new Date(); const iso=d.toISOString().slice(0,10);
+      const el=document.getElementById('c_date');
+      if(el) el.value = iso;
+    })();
+  </script>
 
-window.downloadExcel=function(){
-  let wb=XLSX.utils.table_to_book(document.getElementById('collectionTable'),{sheet:"Sheet1"});
-  XLSX.writeFile(wb,"दूध-संकलन.xlsx");
-};
-</script>
+  <!-- module script: firebase and app logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    // ====== Firebase config: replace with your actual config ======
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_4wQmuzFPJjid-Co9Y-6vgEb70jxWTSY",
+      authDomain: "dairy-mill-production.firebaseapp.com",
+      databaseURL: "https://dairy-mill-production-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "dairy-mill-production",
+      storageBucket: "dairy-mill-production.firebasestorage.app",
+      messagingSenderId: "721651192386",
+      appId: "1:721651192386:web:b5613cedce06deed1e13db",
+      measurementId: "G-YQ2BDHS8HG"
+    };
+    // ==============================================================
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // demo member list (101-110)
+    const memberList = {
+      101:"संतोष पाटील",
+      102:"राजेश जाधव",
+      103:"सुनिता काळे",
+      104:"अजय शिंदे",
+      105:"योगेश कदम",
+      106:"स्मिता सावंत",
+      107:"गणेश देशमुख",
+      108:"प्रिया पवार",
+      109:"माधव माळी",
+      110:"सपना मोरे"
+    };
+
+    // per-can liters (changeable)
+    const perCan = 50;
+    document.getElementById('perCanLabel').innerText = perCan;
+
+    // make functions available to inline handlers
+    window.autoFillName = function(){
+      const no = document.getElementById('memberNo').value;
+      document.getElementById('memberName').value = memberList[no] || "";
+    }
+
+    window.calcAmount = function(){
+      const liters = parseFloat(document.getElementById('c_liter').value || 0);
+      const rate = parseFloat(document.getElementById('c_rate').value || 0);
+      const amount = (liters * rate).toFixed(2);
+      document.getElementById('c_amount').value = isFinite(amount) ? amount : '';
+    }
+
+    // save collection
+    window.saveCollection = function(){
+      const no = document.getElementById('memberNo').value.trim();
+      const name = document.getElementById('memberName').value.trim();
+      const date = document.getElementById('c_date').value;
+      const type = document.getElementById('c_type').value;
+      const liters = parseFloat(document.getElementById('c_liter').value || 0);
+      const fat = document.getElementById('c_fat').value;
+      const rate = document.getElementById('c_rate').value;
+      const amount = parseFloat(document.getElementById('c_amount').value || (liters * (rate||0))).toFixed(2);
+
+      if(!no || !name){
+        alert('मेंबर नंबर योग्य नाही किंवा नाव नसलेले मेंबर आहे. 101–110 वापरा किंवा suppliers मध्ये नवीन नोंद करा.');
+        return;
+      }
+      if(!date || !type || !liters){
+        alert('सर्व आवश्यक फील्ड भरा.');
+        return;
+      }
+
+      push(ref(db,'milkCollection'),{memberNo:no,name,date,type,liters,fat,rate,amount})
+        .then(()=> {
+          alert('दूध नोंद सेव्ह झाली ✅');
+          document.querySelector('form').reset();
+          document.getElementById('memberName').value = '';
+          // reset date to today
+          document.getElementById('c_date').value = new Date().toISOString().slice(0,10);
+        })
+        .catch(err => { console.error(err); alert('सेव्ह करताना त्रुटी'); });
+    }
+
+    // save supplier
+    window.saveSupplier = function(){
+      const name = document.getElementById('s_name').value.trim();
+      const mobile = document.getElementById('s_mobile').value.trim();
+      const village = document.getElementById('s_village').value.trim();
+      if(!name || !mobile) { alert('नाव व मोबाईल द्या'); return; }
+      push(ref(db,'suppliers'),{name,mobile,village})
+        .then(()=> {
+          alert('पुरवठादार सेव्ह झाला ✅');
+          document.getElementById('s_name').value='';
+          document.getElementById('s_mobile').value='';
+          document.getElementById('s_village').value='';
+        })
+        .catch(e=>{console.error(e);alert('त्रुटी')});
+    }
+
+    // listen collections and update table + today total + cans
+    onValue(ref(db,'milkCollection'), snapshot => {
+      const data = snapshot.val() || {};
+      const tbody = document.getElementById('collectionBody');
+      tbody.innerHTML = '';
+      // today string in YYYY-MM-DD
+      const todayStr = new Date().toISOString().slice(0,10);
+      let todayTotal = 0;
+
+      // keep rows sorted by date desc (optional)
+      const keys = Object.keys(data).sort((a,b)=>{
+        const da = data[a].date || '', dbv = data[b].date || '';
+        return dbv.localeCompare(da);
+      });
+
+      for(const k of keys){
+        const r = data[k];
+        const liters = parseFloat(r.liters || 0);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.memberNo||''}</td>
+                        <td>${r.name||''}</td>
+                        <td>${r.date||''}</td>
+                        <td>${r.type||''}</td>
+                        <td>${liters}</td>
+                        <td>${r.fat||''}</td>
+                        <td>${r.rate||''}</td>
+                        <td>${r.amount||''}</td>`;
+        tbody.appendChild(tr);
+
+        if(r.date === todayStr){
+          todayTotal += liters;
+        }
+      }
+
+      // update today total UI
+      document.getElementById('todayTotal').innerText = Number(todayTotal.toFixed(2));
+
+      // update cans visualization
+      renderCans(todayTotal);
+    });
+
+    // suppliers listen
+    onValue(ref(db,'suppliers'), snap => {
+      const data = snap.val() || {};
+      const tb = document.getElementById('suppliersBody');
+      tb.innerHTML = '';
+      for(const k of Object.keys(data)){
+        const r = data[k];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.name||''}</td><td>${r.mobile||''}</td><td>${r.village||''}</td>`;
+        tb.appendChild(tr);
+      }
+    });
+
+    // ---- cans rendering ----
+    const cansRow = document.getElementById('cansRow');
+    function renderCans(totalLiters){
+      cansRow.innerHTML = '';
+      const maxCans = 10; // visual limit
+      const neededCans = Math.min(maxCans, Math.ceil(totalLiters / perCan));
+      // if no milk, show 1 empty can
+      const count = Math.max(1, neededCans);
+      let remaining = totalLiters;
+      for(let i=0;i<count;i++){
+        const lit = Math.min(perCan, Math.max(0, remaining));
+        const fillPercent = (lit / perCan) * 100;
+        remaining -= lit;
+
+        const canWrap = document.createElement('div');
+        canWrap.style.textAlign='center';
+        canWrap.innerHTML = `
+          <div class="can" role="img" aria-label="milk can">
+            <div class="cap"></div>
+            <div class="milk-fill" style="height:${fillPercent}%;"><span style="opacity:0.9;font-size:11px">${Math.round(fillPercent)}%</span></div>
+          </div>
+          <div class="can-label">${Math.round(lit)}L</div>
+        `;
+        cansRow.appendChild(canWrap);
+      }
+
+      // if total exceeds visual capacity, add summary badge
+      if(totalLiters > perCan * maxCans){
+        const more = document.createElement('div');
+        more.style.padding='8px';
+        more.style.fontSize='0.9rem';
+        more.style.color='#444';
+        more.innerText = `आणि ${Math.round(totalLiters - perCan*maxCans)}L अधिक`;
+        cansRow.appendChild(more);
+      }
+    }
+    // init empty
+    renderCans(0);
+
+    // ---- PDF / Excel ----
+    window.downloadPDF = function(){
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(14);
+      doc.text('दूध संकलन रेकॉर्ड', 14, 15);
+      doc.autoTable({ html: '#collectionTable', startY: 25, headStyles:{fillColor:[13,110,253]}, styles:{fontSize:10} });
+      doc.save('दूध-संकलन.pdf');
+    }
+
+    window.downloadExcel = function(){
+      try {
+        const table = document.getElementById('collectionTable');
+        const wb = XLSX.utils.table_to_book(table, {sheet:"दूध संकलन"});
+        XLSX.writeFile(wb, 'दूध-संकलन.xlsx');
+      } catch(e){ console.error(e); alert('Excel export failed'); }
+    }
+
+    // expose renderCans for debugging (optional)
+    window.renderCans = renderCans;
+
+  </script>
 </body>
 </html>
