@@ -1,85 +1,142 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Milk Collection Portal</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>भावेश्वरी दूध संस्था, गोरंबे</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- jsPDF / autoTable / SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- your CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h2>🐄 भावेश्वरी दूध संस्था, गोरंबे</h2>
 
-  <header>
-    Milk Collection JAYHIND TARLE
-  </header>
+  <nav>
+    <a href="#" onclick="show('home')">🏠 होम</a>
+    <a href="#" onclick="show('collection')">🥛 संकलन</a>
+    <a href="#" onclick="show('suppliers')">📋 पुरवठादार</a>
+    <a href="#" onclick="show('reports')">📑 रिपोर्ट्स</a>
+  </nav>
 
-  <div class="nav-bar">
-    <button>होम</button>
-    <button>दूध संकलन</button>
-    <button>पुरवठादार</button>
-    <button>पेमेंट / बिलिंग</button>
-    <button>रिपोर्ट्स</button>
-  </div>
-
-  <div class="form-container">
-    <div class="section-title">दूध संकलन</div>
-
-    <div class="form-row">
-      <label>कोड:</label>
-      <input type="text" id="code">
+  <!-- HOME -->
+  <section id="home" class="active">
+    <div class="card">
+      <h3>संस्था माहिती</h3>
+      <p>भावेश्वरी दूध संस्था, गोरंबे</p>
+      <p>संपर्क: <strong>9876543210</strong></p>
+      <p>आम्ही ताजं दूध रोज संकलित करतो व स्थानिक मार्केटमध्ये वितरित करतो.</p>
     </div>
+  </section>
 
-    <div class="form-row">
-      <label>नाव:</label>
-      <input type="text" id="name">
+  <!-- COLLECTION -->
+  <section id="collection">
+    <div class="card">
+      <h3>दूध संकलन नोंद</h3>
+
+      <div class="today-box">
+        <div class="today-text">
+          <div>आज एकूण जमा झाले</div>
+          <div class="big"><span id="todayTotal">0</span> लिटर</div>
+          <div>(प्रति कॅन = <span id="perCanLabel">50</span> लिटर)</div>
+        </div>
+        <div>
+          <div class="cans-row" id="cansRow"></div>
+        </div>
+      </div>
+
+      <form onsubmit="event.preventDefault();saveCollection();" class="card">
+        <div>
+          <label>मेंबर नंबर</label>
+          <input id="memberNo" type="number" oninput="autoFillName()" placeholder="उदा. 101" required>
+        </div>
+        <div>
+          <label>नाव</label>
+          <input id="memberName" readonly placeholder="ऑटो-फिल">
+        </div>
+        <div>
+          <label>तारीख</label>
+          <input id="c_date" type="date" required>
+        </div>
+        <div>
+          <label>प्रकार</label>
+          <select id="c_type" required>
+            <option value="">निवडा</option>
+            <option value="गाय">गाय</option>
+            <option value="म्हैस">म्हैस</option>
+          </select>
+        </div>
+        <div>
+          <label>लिटर</label>
+          <input id="c_liter" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label>फॅट (%)</label>
+          <input id="c_fat" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label>रेट (₹/लिटर)</label>
+          <input id="c_rate" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label>रक्कम (ऑटो)</label>
+          <input id="c_amount" type="number" step="0.01" readonly placeholder="ऑटो गणना">
+        </div>
+        <div class="full" style="display:flex;gap:8px">
+          <button type="button" style="flex:1" onclick="calcAmount()">रक्कम गणना</button>
+          <button type="submit" style="flex:1">सेव्ह करा</button>
+        </div>
+      </form>
+
+      <div style="margin-top:12px;overflow:auto">
+        <table id="collectionTable">
+          <thead>
+            <tr><th>मेंबर</th><th>नाव</th><th>तारीख</th><th>प्रकार</th><th>लिटर</th><th>फॅट</th><th>रेट</th><th>रक्कम</th></tr>
+          </thead>
+          <tbody id="collectionBody"></tbody>
+        </table>
+      </div>
     </div>
+  </section>
 
-    <div class="form-row">
-      <label>लिटर:</label>
-      <input type="number" id="liters">
+  <!-- SUPPLIERS -->
+  <section id="suppliers">
+    <div class="card">
+      <h3>पुरवठादार नोंदणी</h3>
+      <form onsubmit="event.preventDefault();saveSupplier();">
+        <div><label>नाव</label><input id="s_name" required></div>
+        <div><label>मोबाईल</label><input id="s_mobile" required></div>
+        <div><label>गाव</label><input id="s_village" required></div>
+        <div style="margin-top:8px"><button type="submit">सेव्ह</button></div>
+      </form>
+      <div style="margin-top:12px;overflow:auto">
+        <table>
+          <thead><tr><th>नाव</th><th>मोबाईल</th><th>गाव</th></tr></thead>
+          <tbody id="suppliersBody"></tbody>
+        </table>
+      </div>
     </div>
+  </section>
 
-    <div class="form-row">
-      <label>फॅट %:</label>
-      <input type="number" id="fat">
+  <!-- REPORTS -->
+  <section id="reports">
+    <div class="card">
+      <h3>रिपोर्ट्स डाउनलोड</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="downloadPDF()">दूध संकलन PDF</button>
+        <button onclick="downloadExcel()">दूध संकलन Excel</button>
+      </div>
     </div>
+  </section>
 
-    <div class="form-row">
-      <label>SNF %:</label>
-      <input type="number" id="snf">
-    </div>
-
-    <div class="form-row">
-      <label>दर ₹:</label>
-      <input type="number" id="rate">
-    </div>
-
-    <button onclick="saveData()">डेटा सेव्ह करा</button>
-
-    <div class="milk-cans">
-      <div class="milk-can"></div>
-      <div class="milk-can"></div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>तारीख</th>
-          <th>नाव</th>
-          <th>लिटर</th>
-          <th>फॅट</th>
-          <th>SNF</th>
-          <th>दर</th>
-          <th>रक्कम</th>
-        </tr>
-      </thead>
-      <tbody id="dataBody"></tbody>
-    </table>
-  </div>
-
-  <script>
-    function saveData(){
-      alert('डेटा सेव्ह झाला ✅');
-    }
-  </script>
+  <!-- scripts -->
+  <script src="app.js" type="module"></script>
 </body>
 </html>
