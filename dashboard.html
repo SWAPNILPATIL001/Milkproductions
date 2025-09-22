@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>दूध संकलन</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard">
+  <header>
+    <h1>दूध संकलन - </h1>
+    <span id="ownerMilk">आजचे एकूण कॅन: 0</span>
+  </header>
+
+  <section class="form-section">
+    <label>कोड</label><input id="code">
+    <label>फॅट</label><input id="fat">
+    <label>SNF</label><input id="snf">
+    <label>प्रमाण (ली)</label><input id="qty">
+    <button id="addBtn">जोडा</button>
+  </section>
+
+  <section class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>कोड</th><th>फॅट</th><th>SNF</th><th>ली.</th><th>रेट</th><th>एकूण</th>
+        </tr>
+      </thead>
+      <tbody id="milkTable"></tbody>
+    </table>
+  </section>
+
+  <script type="module" src="rates.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
