@@ -2,168 +2,18 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>भावेश्वरी दूध संस्था</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-  <style>
-    body {font-family:'Poppins',sans-serif;max-width:800px;margin:auto;padding:10px;}
-    h2{text-align:center;}
-    form input, form select{width:100%;padding:8px;margin:4px 0;}
-    button{padding:8px 12px;margin-top:6px;}
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th,td{border:1px solid #ccc;padding:6px;text-align:center;}
-    .milk-can{display:flex;align-items:center;justify-content:center;background:#f0f8ff;padding:10px;margin:10px 0;border-radius:6px;}
-    .milk-can img{width:50px;height:50px;margin-right:10px;}
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>दूध संकलन - लॉगिन</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h2>🐄 भावेश्वरी दूध संस्था</h2>
-
-  <div class="milk-can">
-    <img src="https://cdn-icons-png.flaticon.com/512/1047/1047710.png" alt="milk can">
-    <div>आजपर्यंतचे लिटर: <span id="totalLiters">0</span></div>
+<body class="login-page">
+  <div class="login-box">
+    <h1>दूध संकलन लॉगिन</h1>
+    <input type="email" id="email" placeholder="ई-मेल">
+    <input type="password" id="password" placeholder="पासवर्ड">
+    <button id="loginBtn">लॉगिन</button>
   </div>
-
-  <!-- पुरवठादार नंबर व माहिती -->
-  <label>पुरवठादार मोबाईल:</label>
-  <input type="number" id="mobile" placeholder="मोबाईल नंबर" oninput="autoFillName()">
-  <label>नाव:</label>
-  <input type="text" id="name" readonly>
-
-  <form id="milkForm" onsubmit="event.preventDefault(); submitMilkData();">
-    <label>तारीख:</label>
-    <input type="date" id="date" required>
-    <label>प्रकार:</label>
-    <select id="animal" required>
-      <option value="गाय">गाय</option>
-      <option value="म्हैस">म्हैस</option>
-    </select>
-    <label>लिटर:</label>
-    <input type="number" id="liters" step="0.1" required>
-    <label>फॅट:</label>
-    <input type="number" id="fat" step="0.1" required oninput="autoFillRate()">
-    <label>SNF:</label>
-    <input type="number" id="snf" step="0.1" required oninput="autoFillRate()">
-    <label>रेट (₹ प्रति लिटर):</label>
-    <input type="number" id="rate" step="0.1" readonly>
-    <button type="submit">डेटा सेव्ह करा</button>
-  </form>
-
-  <h3>संकलन रेकॉर्ड:</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>तारीख</th>
-        <th>नाव</th>
-        <th>मोबाईल</th>
-        <th>प्रकार</th>
-        <th>लिटर</th>
-        <th>फॅट</th>
-        <th>SNF</th>
-        <th>रेट</th>
-        <th>रक्कम</th>
-      </tr>
-    </thead>
-    <tbody id="dataBody"></tbody>
-  </table>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD_4wQmuzFPJjid-Co9Y-6vgEb70jxWTSY",
-      authDomain: "dairy-mill-production.firebaseapp.com",
-      databaseURL: "https://dairy-mill-production-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "dairy-mill-production",
-      storageBucket: "dairy-mill-production.firebasestorage.app",
-      messagingSenderId: "721651192386",
-      appId: "1:721651192386:web:b5613cedce06deed1e13db",
-      measurementId: "G-YQ2BDHS8HG"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // sample suppliers
-    const suppliers = {
-      "9876543210":"राम",
-      "9876543211":"श्याम",
-      "9876543212":"सचिन",
-      "9876543213":"संदीप",
-      "9876543214":"मनीष",
-      "9876543215":"सोनाली",
-      "9876543216":"भूषण",
-      "9876543217":"विनायक",
-      "9876543218":"पूजा",
-      "9876543219":"प्रसाद"
-    };
-
-    window.autoFillName = function(){
-      const mob=document.getElementById('mobile').value;
-      document.getElementById('name').value=suppliers[mob]||'';
-    };
-
-    // sample rate chart (fill full table)
-    const rateChart={
-      "6.0":{"8.3":33.60,"8.4":33.80},
-      "6.2":{"8.3":33.80,"8.4":34.00},
-      "6.4":{"8.3":34.00,"8.4":34.20}
-    };
-
-    window.autoFillRate=function(){
-      const fat=document.getElementById('fat').value;
-      const snf=document.getElementById('snf').value;
-      if(rateChart[fat] && rateChart[fat][snf]){
-        document.getElementById('rate').value=rateChart[fat][snf];
-      }else{
-        document.getElementById('rate').value='';
-      }
-    };
-
-    window.submitMilkData=function(){
-      const date=document.getElementById('date').value;
-      const name=document.getElementById('name').value;
-      const mobile=document.getElementById('mobile').value;
-      const animal=document.getElementById('animal').value;
-      const liters=document.getElementById('liters').value;
-      const fat=document.getElementById('fat').value;
-      const snf=document.getElementById('snf').value;
-      const rate=document.getElementById('rate').value;
-      const amount=(parseFloat(liters)*parseFloat(rate)).toFixed(2);
-
-      push(ref(db,'milkCollection'),{
-        date,name,mobile,animal,liters,fat,snf,rate,amount
-      }).then(()=>{
-        alert('डेटा सेव्ह झाला ✅');
-        document.getElementById('milkForm').reset();
-      });
-    };
-
-    const dataRef=ref(db,'milkCollection');
-    onValue(dataRef,(snapshot)=>{
-      const data=snapshot.val();
-      const tableBody=document.getElementById('dataBody');
-      tableBody.innerHTML='';
-      let total=0;
-      for(let key in data){
-        const row=data[key];
-        total+=parseFloat(row.liters);
-        tableBody.innerHTML+=`
-          <tr>
-            <td>${row.date}</td>
-            <td>${row.name}</td>
-            <td>${row.mobile}</td>
-            <td>${row.animal}</td>
-            <td>${row.liters}</td>
-            <td>${row.fat}</td>
-            <td>${row.snf}</td>
-            <td>${row.rate}</td>
-            <td>${row.amount}</td>
-          </tr>`;
-      }
-      document.getElementById('totalLiters').textContent=total.toFixed(1);
-    });
-  </script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
